@@ -4,10 +4,10 @@ variable "vm_size" {
   description = "Azure VM size"
   type        = string
 
-  validation {
-    condition     = can(regex("^Standard_", var.vm_size))
-    error_message = "VM size must start with 'Standard_'."
-  }
+validation {
+  condition     = contains(["Standard_B1s", "Standard_B2s"], var.vm_size)
+  error_message = "Free Subscription allows only: Standard_B1s, Standard_B2s."
+}
 }
 variable "admin_username" {}
 variable "admin_password" {}
