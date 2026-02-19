@@ -63,9 +63,8 @@ os_disk {
   caching              = "ReadWrite"
   storage_account_type = "Standard_LRS"
 
-  disk_size_gb = var.os_type == "windows" ? 
-    max(var.disk_size, 127) : 
-    max(var.disk_size, 30)
+disk_size_gb = var.os_type == "windows" ? max(var.disk_size, 127) : max(var.disk_size, 30)
+
 }
 
 
