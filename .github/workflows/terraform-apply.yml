@@ -1,0 +1,79 @@
+name: Terraform Apply (Approval Based)
+
+on:
+  workflow_dispatch:
+    inputs:
+      cloud_provider:
+        description: "Select Cloud Provider"
+        required: true
+        default: "azure"
+        type: choice
+        options:
+          - azure
+
+      vm_size:
+        description: "Select VM Size (Free Eligible Only)"
+        required: true
+        type: choice
+        options:
+          - Standard_B1s
+          - Standard_B2s
+
+      os_type:
+        description: "Select Operating System"
+        required: true
+        type: choice
+        options:
+          - windows
+          - linux
+
+      location:
+        description: "Select Azure Region"
+        required: true
+        default: "eastus2"
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+
+    # 🔐 This enables manual approval before apply
+    environment: production
+
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: |
+          terraform plan \
+            -var="vm_size=${{ github.event.inputs.vm_size }}" \
+            -var="os_type=${{ github.event.inputs.os_type }}" \
+            -var="location=${{ github.event.inputs.location }}" \
+            -var="vm_name=devvm01" \
+            -var="admin_username=azureuser" \
+            -var="admin_password=Password123!"
+
+      - name: Terraform Apply
+        run: |
+          terraform apply -auto-approve \
+            -var="vm_size=${{ github.event.inputs.vm_size }}" \
+            -var="os_type=${{ github.event.inputs.os_type }}" \
+            -var="location=${{ github.event.inputs.location }}" \
+            -var="vm_name=devvm01" \
+            -var="admin_username=azureuser" \
+            -var="admin_password=Password123!"

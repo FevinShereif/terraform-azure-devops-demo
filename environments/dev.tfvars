@@ -10,3 +10,4 @@ tags = {
   project     = "terraform-learning"
   costcenter  = "free-trial"
 }
+allowed_vm_sizes = ["Standard_B1s", "Standard_B2s"]
