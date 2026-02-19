@@ -1,3 +1,5 @@
+# Demo change for PR test
+
 variable "location" {
   description = "Azure region"
   type        = string
