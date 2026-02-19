@@ -29,8 +29,5 @@ variable "os_type" {
   description = "Operating system type"
   type        = string
 }
-variable "tags" {
-  description = "Common tags for resources"
-  type        = map(string)
-}
+
 
