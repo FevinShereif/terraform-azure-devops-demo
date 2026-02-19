@@ -33,7 +33,4 @@ variable "tags" {
   description = "Common tags for resources"
   type        = map(string)
 }
-variable "allowed_vm_sizes" {
-  description = "Allowed VM sizes for this environment"
-  type        = list(string)
-}
+
