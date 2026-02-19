@@ -27,16 +27,15 @@ on:
           - windows
           - linux
 
-disk_size:
-  description: "Select OS Disk Size (GB)"
-  required: true
-  type: choice
-  options:
-    - "30"
-    - "64"
-    - "127"
-    - "128"
-
+      disk_size:
+        description: "Select OS Disk Size (GB)"
+        required: true
+        type: choice
+        options:
+          - "30"
+          - "64"
+          - "127"
+          - "128"
 
       location:
         description: "Select Azure Region"
@@ -46,8 +45,6 @@ disk_size:
 jobs:
   apply:
     runs-on: ubuntu-latest
-
-    # 🔐 Requires manual approval (configure in repo settings → environments → production)
     environment: production
 
     env:
@@ -69,7 +66,6 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      # 🔎 Extra Free Subscription Validation (Safety Layer)
       - name: Validate Free Subscription Rules
         run: |
           if [[ "${{ github.event.inputs.vm_size }}" != "Standard_B1s" && "${{ github.event.inputs.vm_size }}" != "Standard_B2s" ]]; then
