@@ -27,13 +27,16 @@ on:
           - windows
           - linux
 
-      disk_size:
-        description: "Select OS Disk Size (GB)"
-        required: true
-        type: choice
-        options:
-          - "30"
-          - "64"
+disk_size:
+  description: "Select OS Disk Size (GB)"
+  required: true
+  type: choice
+  options:
+    - "30"
+    - "64"
+    - "127"
+    - "128"
+
 
       location:
         description: "Select Azure Region"
