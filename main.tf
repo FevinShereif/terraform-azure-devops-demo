@@ -23,5 +23,4 @@ module "vm" {
   os_type        = var.os_type
   tags           = var.tags
 
-  allowed_vm_sizes = var.allowed_vm_sizes   # 👈 ADD THIS
 }
