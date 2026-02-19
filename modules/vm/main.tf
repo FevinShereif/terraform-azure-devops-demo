@@ -59,10 +59,12 @@ resource "azurerm_windows_virtual_machine" "windows_vm" {
     azurerm_network_interface.nic.id,
   ]
 
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
+os_disk {
+  caching              = "ReadWrite"
+  storage_account_type = "Standard_LRS"
+  disk_size_gb         = var.disk_size
+}
+
 
   source_image_reference {
     publisher = "MicrosoftWindowsServer"

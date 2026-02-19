@@ -29,5 +29,8 @@ variable "os_type" {
   description = "Operating system type"
   type        = string
 }
+variable "disk_size" {
+  type = number
+}
 
 

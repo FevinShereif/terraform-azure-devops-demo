@@ -16,6 +16,11 @@ variable "vm_size" {
     error_message = "This subscription allows only the following VM sizes: ${join(", ", var.allowed_vm_sizes)}"
   }
 }
+variable "disk_size" {
+  description = "OS disk size in GB"
+  type        = number
+  default     = 30
+}
 
 variable "admin_username" {}
 variable "admin_password" {}
