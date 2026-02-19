@@ -28,18 +28,19 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-- name: Terraform Plan
-  id: plan
-  run: |
-    terraform plan -var-file="environments/dev.tfvars" -no-color > plan.txt
-    cat plan.txt
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan -var-file="environments/dev.tfvars" -no-color > plan.txt
+          cat plan.txt
 
-- name: Comment Plan in PR
-  uses: marocchino/sticky-pull-request-comment@v2
-  with:
-    path: plan.txt
-- name: Upload Plan Artifact
-  uses: actions/upload-artifact@v3
-  with:
-    name: terraform-plan
-    path: plan.txt
+      - name: Comment Plan in PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: plan.txt
+
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: plan.txt
