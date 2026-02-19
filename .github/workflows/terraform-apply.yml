@@ -1,4 +1,4 @@
-name: Terraform Apply (Approval Based)
+name: Terraform Apply (Self-Service with Approval)
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ on:
           - azure
 
       vm_size:
-        description: "Select VM Size (Free Eligible Only)"
+        description: "Select Free Eligible VM Size"
         required: true
         type: choice
         options:
@@ -27,6 +27,14 @@ on:
           - windows
           - linux
 
+      disk_size:
+        description: "Select OS Disk Size (GB)"
+        required: true
+        type: choice
+        options:
+          - "30"
+          - "64"
+
       location:
         description: "Select Azure Region"
         required: true
@@ -36,7 +44,7 @@ jobs:
   apply:
     runs-on: ubuntu-latest
 
-    # 🔐 This enables manual approval before apply
+    # 🔐 Requires manual approval (configure in repo settings → environments → production)
     environment: production
 
     env:
@@ -58,22 +66,32 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
+      # 🔎 Extra Free Subscription Validation (Safety Layer)
+      - name: Validate Free Subscription Rules
+        run: |
+          if [[ "${{ github.event.inputs.vm_size }}" != "Standard_B1s" && "${{ github.event.inputs.vm_size }}" != "Standard_B2s" ]]; then
+            echo "❌ Free subscription allows only B1s or B2s VM sizes."
+            exit 1
+          fi
+
       - name: Terraform Plan
         run: |
           terraform plan \
             -var="vm_size=${{ github.event.inputs.vm_size }}" \
             -var="os_type=${{ github.event.inputs.os_type }}" \
+            -var="disk_size=${{ github.event.inputs.disk_size }}" \
             -var="location=${{ github.event.inputs.location }}" \
             -var="vm_name=devvm01" \
             -var="admin_username=azureuser" \
-            -var="admin_password=Password123!"
+            -var="admin_password=${{ secrets.ADMIN_PASSWORD }}"
 
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve \
             -var="vm_size=${{ github.event.inputs.vm_size }}" \
             -var="os_type=${{ github.event.inputs.os_type }}" \
+            -var="disk_size=${{ github.event.inputs.disk_size }}" \
             -var="location=${{ github.event.inputs.location }}" \
             -var="vm_name=devvm01" \
             -var="admin_username=azureuser" \
-            -var="admin_password=Password123!"
+            -var="admin_password=${{ secrets.ADMIN_PASSWORD }}"
