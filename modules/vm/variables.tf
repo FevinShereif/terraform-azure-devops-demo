@@ -15,6 +15,16 @@ variable "vm_size" {
     error_message = "This subscription allows only the following VM sizes: ${join(", ", var.allowed_vm_sizes)}"
   }
 }
+variable "allowed_vm_sizes" {
+  description = "Allowed VM sizes for free subscription"
+  type        = list(string)
+
+  default = [
+    "Standard_B1s",
+    "Standard_B2s"
+  ]
+}
+
 variable "admin_username" {}
 variable "admin_password" {}
 variable "os_type" {
