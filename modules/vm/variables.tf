@@ -33,4 +33,11 @@ variable "os_type" {
 variable "tags" {
   description = "Common tags to apply to all resources"
   type        = map(string)
+
+  default = {
+    environment = "dev"
+    owner       = "fevin"
+    project     = "terraform-learning"
+    costcenter  = "free-trial"
+  }
 }
