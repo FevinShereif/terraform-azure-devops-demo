@@ -54,15 +54,17 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        id: plan
         run: |
-          terraform plan -refresh=false -var-file="environments/dev.tfvars" -no-color > plan.txt
-          cat plan.txt
+          terraform plan \
+            -refresh=false \
+            -var="vm_size=${{ github.event.inputs.vm_size }}" \
+            -var="os_type=${{ github.event.inputs.os_type }}" \
+            -var="disk_size=${{ github.event.inputs.disk_size }}" \
+            -var="location=${{ github.event.inputs.location }}" \
+            -var-file="environments/dev.tfvars" \
+            -no-color > plan.txt
 
-      - name: Comment Plan in PR
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          path: plan.txt
+          cat plan.txt
 
       - name: Upload Plan Artifact
         uses: actions/upload-artifact@v4
