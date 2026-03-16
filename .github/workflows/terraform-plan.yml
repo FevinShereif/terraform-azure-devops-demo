@@ -1,14 +1,14 @@
-name: Terraform Plan (Safe Demo)
+name: Terraform Plan (Self-Service VM Planner)
 
 permissions:
   contents: read
-  pull-requests: write
 
 on:
   workflow_dispatch:
     inputs:
+
       vm_size:
-        description: "VM Size"
+        description: "Azure VM Size (Example: Standard_B2s, Standard_D2s_v3)"
         required: true
         default: "Standard_B2s"
 
@@ -41,7 +41,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
       - name: Setup Terraform
@@ -52,6 +52,14 @@ jobs:
 
       - name: Terraform Validate
         run: terraform validate
+
+      # Display selected configuration
+      - name: Show Selected Configuration
+        run: |
+          echo "VM Size: ${{ github.event.inputs.vm_size }}"
+          echo "OS Type: ${{ github.event.inputs.os_type }}"
+          echo "Disk Size: ${{ github.event.inputs.disk_size }}"
+          echo "Region: ${{ github.event.inputs.location }}"
 
       - name: Terraform Plan
         run: |
