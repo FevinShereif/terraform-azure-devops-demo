@@ -29,7 +29,6 @@ on:
         description: "Azure Region"
         required: true
         default: "eastus"
-  workflow_dispatch:
 
 jobs:
   terraform:
