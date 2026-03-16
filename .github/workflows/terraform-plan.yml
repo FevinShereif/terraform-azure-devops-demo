@@ -5,10 +5,30 @@ permissions:
   pull-requests: write
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      vm_size:
+        description: "VM Size"
+        required: true
+        default: "Standard_B2s"
 
+      os_type:
+        description: "Operating System"
+        required: true
+        type: choice
+        options:
+          - linux
+          - windows
+
+      disk_size:
+        description: "Disk Size (GB)"
+        required: true
+        default: "30"
+
+      location:
+        description: "Azure Region"
+        required: true
+        default: "eastus"
   workflow_dispatch:
 
 jobs:
