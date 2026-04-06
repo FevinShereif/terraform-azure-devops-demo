@@ -53,69 +53,70 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      # Display selected configuration
       - name: Show Selected Configuration
         run: |
           echo "VM Size: ${{ github.event.inputs.vm_size }}"
           echo "OS Type: ${{ github.event.inputs.os_type }}"
           echo "Disk Size: ${{ github.event.inputs.disk_size }}"
           echo "Region: ${{ github.event.inputs.location }}"
-- name: Suggest Disk Size Based on OS
-  run: |
-    echo "Checking disk recommendation..."
 
-    if [ "${{ github.event.inputs.os_type }}" == "windows" ]; then
-      recommended_disk=127
-    else
-      recommended_disk=30
-    fi
+      # ✅ Suggest Disk
+      - name: Suggest Disk Size Based on OS
+        run: |
+          echo "Checking disk recommendation..."
 
-    echo "Recommended Disk Size for ${{ github.event.inputs.os_type }}: ${recommended_disk}GB"
+          if [ "${{ github.event.inputs.os_type }}" == "windows" ]; then
+            recommended_disk=127
+          else
+            recommended_disk=30
+          fi
 
-    if [ "${{ github.event.inputs.disk_size }}" -lt "$recommended_disk" ]; then
-      echo "⚠️ Provided disk size is too small."
-      echo "👉 Suggested disk size: ${recommended_disk}GB"
-    else
-      echo "✅ Disk size is valid."
-    fi
-    - name: Show Recommended VM Types
-  run: |
-    echo "Recommended VM types for typical usage:"
+          echo "Recommended Disk Size: ${recommended_disk}GB"
 
-    if [ "${{ github.event.inputs.os_type }}" == "linux" ]; then
-      echo "Linux Recommendations:"
-      echo "- Standard_B1s (Low cost, testing)"
-      echo "- Standard_B2s (General usage)"
-      echo "- Standard_D2s_v3 (Production small workload)"
-    else
-      echo "Windows Recommendations:"
-      echo "- Standard_B2s (Minimum recommended)"
-      echo "- Standard_D2s_v3 (Better performance)"
-      echo "- Standard_D4s_v3 (Production workload)"
-    fi
+          if [ "${{ github.event.inputs.disk_size }}" -lt "$recommended_disk" ]; then
+            echo "⚠️ Provided disk size is too small"
+          else
+            echo "✅ Disk size is valid"
+          fi
+
+      # ✅ VM Recommendations
+      - name: Show Recommended VM Types
+        run: |
+          echo "Recommended VM types:"
+
+          if [ "${{ github.event.inputs.os_type }}" == "linux" ]; then
+            echo "- Standard_B1s"
+            echo "- Standard_B2s"
+            echo "- Standard_D2s_v3"
+          else
+            echo "- Standard_B2s"
+            echo "- Standard_D2s_v3"
+            echo "- Standard_D4s_v3"
+          fi
+
+      # ✅ Terraform Plan
       - name: Terraform Plan
-  run: |
-    # Auto-correct disk size
-    if [ "${{ github.event.inputs.os_type }}" == "windows" ] && [ "${{ github.event.inputs.disk_size }}" -lt 127 ]; then
-      disk=127
-      echo "⚠️ Auto-corrected disk size to 127GB for Windows"
-    elif [ "${{ github.event.inputs.os_type }}" == "linux" ] && [ "${{ github.event.inputs.disk_size }}" -lt 30 ]; then
-      disk=30
-      echo "⚠️ Auto-corrected disk size to 30GB for Linux"
-    else
-      disk=${{ github.event.inputs.disk_size }}
-    fi
+        run: |
+          if [ "${{ github.event.inputs.os_type }}" == "windows" ] && [ "${{ github.event.inputs.disk_size }}" -lt 127 ]; then
+            disk=127
+            echo "⚠️ Auto-corrected disk to 127GB"
+          elif [ "${{ github.event.inputs.os_type }}" == "linux" ] && [ "${{ github.event.inputs.disk_size }}" -lt 30 ]; then
+            disk=30
+            echo "⚠️ Auto-corrected disk to 30GB"
+          else
+            disk=${{ github.event.inputs.disk_size }}
+          fi
 
-    terraform plan \
-      -refresh=false \
-      -var="vm_size=${{ github.event.inputs.vm_size }}" \
-      -var="os_type=${{ github.event.inputs.os_type }}" \
-      -var="disk_size=$disk" \
-      -var="location=${{ github.event.inputs.location }}" \
-      -var-file="environments/dev.tfvars" \
-      -no-color > plan.txt
+          terraform plan \
+            -refresh=false \
+            -var="vm_size=${{ github.event.inputs.vm_size }}" \
+            -var="os_type=${{ github.event.inputs.os_type }}" \
+            -var="disk_size=$disk" \
+            -var="location=${{ github.event.inputs.location }}" \
+            -var-file="environments/dev.tfvars" \
+            -no-color > plan.txt
 
-    cat plan.txt
+          cat plan.txt
 
       - name: Upload Plan Artifact
         uses: actions/upload-artifact@v4
